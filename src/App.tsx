@@ -11,9 +11,8 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
-
 interface Column {
-  id: 'name' | 'scope' | 'ticket'
+  id: 'name' | 'functionName' | 'tickets' | 'isFuture' | 'repo'
   label: string
   minWidth?: number
   align?: 'right'
@@ -22,40 +21,135 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'name', label: 'Flag Name', minWidth: 170 },
-  { id: 'scope', label: 'Scope', minWidth: 100 },
-  { id: 'ticket', label: 'Ticket Link', minWidth: 100, link: true },
+  { id: 'functionName', label: 'Function Name', minWidth: 100 },
+  { id: 'tickets', label: 'Ticket Links', minWidth: 100 },
+  { id: 'isFuture', label: 'Is Future', minWidth: 100 },
+  { id: 'repo', label: 'Repository', minWidth: 100 },
 ]
 
 interface Data {
   name: string
-  scope: string
-  ticket: string
+  functionName: string
+  tickets: Array<string>
+  isFuture: boolean
+  repo: string
 }
 
-function createData(name: string, scope: string, ticket: string): Data {
-  return { name, scope, ticket }
+function createData(
+  name: string,
+  functionName: string,
+  tickets: string[],
+  isFuture: boolean,
+  repo: string
+): Data {
+  return { name, functionName, tickets, isFuture, repo }
 }
 
 const rows = [
   createData(
-    'ir-rad-navigation',
-    'ir',
-    'https://mui.com/material-ui/api/table/'
+    'enable-issue-management',
+    'issuesManagementEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    true,
+    'audit'
   ),
   createData(
-    'ir-new-modules-navigation',
-    'ir',
-    'https://mui.com/material-ui/api/table/'
+    'ir-enable-test-steps-improvements',
+    'testStepsImprovementsEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    true,
+    'audit'
   ),
   createData(
-    'ir-bears-on-bicycles',
-    'ir',
-    'https://mui.com/material-ui/api/table/'
+    'ir-pendo-resource-center',
+    'isFreeTrialEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
   ),
   createData(
-    'ir-pigs-with-spines',
-    'ir',
-    'https://mui.com/material-ui/api/table/'
+    'ir-remove-sox-admin-header',
+    'isRemoveSoxAdminHeader',
+    ['https://mui.com/material-ui/api/table/'],
+    true,
+    'audit'
+  ),
+  createData(
+    'ir-list-filter-sort',
+    'folderListFilterSortEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    true,
+    'audit'
+  ),
+  createData(
+    'ir-enable-issue-form-with-graph-form-module',
+    'actionPlanGraphFormModuleV3Enabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-issue-form-with-graph-form-module',
+    'issueGraphFormModuleV3Enabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-audit-form-with-graph-form-module',
+    'procedureGraphFormModuleV3Enabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-audit-form-with-graph-form-module',
+    'auditGraphFormModuleV3Enabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'enable-cms-for-copy-ui',
+    'contentManagementServiceForCopyEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-suggested-edits-in-remediation',
+    'remediationSuggestedEditsEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-eco-footnotes',
+    'ecoFootnotesEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-request-lgi-with-eco',
+    'ecoRequestsEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-enable-mui-forms',
+    'muiFormsEnabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
+  ),
+  createData(
+    'ir-audit-garmin-experience',
+    'hasAuditExperienceV2Enabled',
+    ['https://mui.com/material-ui/api/table/'],
+    false,
+    'audit'
   ),
 ]
 
@@ -121,18 +215,31 @@ function StickyHeadTable({ search }: { search: string }) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.scope}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.name}>
                     {columns.map((column) => {
-                      const value = row[column.id]
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.link ? (
-                            <Link href={value}>{value}</Link>
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      )
+                      if (column.id === 'tickets') {
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {row[column.id].map((ticket: string) => (
+                              <Link key={ticket} href={ticket}>
+                                {ticket}
+                              </Link>
+                            ))}
+                          </TableCell>
+                        )
+                      } else if (column.id === 'isFuture') {
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {row[column.id] ? 'Yes' : 'No'}
+                          </TableCell>
+                        )
+                      } else {
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {row[column.id]}
+                          </TableCell>
+                        )
+                      }
                     })}
                   </TableRow>
                 )
